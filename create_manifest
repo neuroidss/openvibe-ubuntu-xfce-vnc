@@ -12,9 +12,10 @@ VERSION=o3.3.1-u20.04
 #  $USER/$NAME:amd64-$VERSION --amend
 docker manifest create \
   $USER/$NAME:$VERSION \
+  $USER/$NAME:riscv64-$VERSION \
   $USER/$NAME:arm64-$VERSION \
   $USER/$NAME:amd64-$VERSION --amend
-#docker manifest annotate $USER/$NAME:$VERSION  $USER/$NAME:riscv64-$VERSION --os linux --arch riscv64
+docker manifest annotate $USER/$NAME:$VERSION  $USER/$NAME:riscv64-$VERSION --os linux --arch riscv64
 #docker manifest annotate $USER/$NAME:$VERSION  $USER/$NAME:arm-$VERSION --os linux --arch arm
 docker manifest annotate $USER/$NAME:$VERSION  $USER/$NAME:arm64-$VERSION --os linux --arch arm64
 docker manifest annotate $USER/$NAME:$VERSION  $USER/$NAME:amd64-$VERSION --os linux --arch amd64
