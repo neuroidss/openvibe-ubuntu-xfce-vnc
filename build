@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+USER=neuroidss
+NAME=openvibe-ubuntu-xfce-vnc
+VERSION=o3.3.1-u20.04
+
+#for arch in amd64; do
+#for arch in arm64; do
+#for arch in amd64 arm64; do
+for arch in riscv64; do
+#for arch in amd64 arm64 arm riscv64; do
+  docker buildx build --platform linux/${arch} -f Dockerfile.${arch} -t $USER/$NAME:${arch}-$VERSION . --push
+done

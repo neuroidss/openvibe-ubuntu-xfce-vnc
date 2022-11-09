@@ -1,0 +1,50 @@
+## Custom Dockerfile
+FROM neuroidss/ubuntu-xfce-vnc:20.04
+COPY qemu-aarch64-static /usr/bin/
+ENV REFRESHED_AT 2022-11-09
+
+USER 0
+
+RUN wget http://openvibe.inria.fr/pub/src/openvibe-3.3.1-src.tar.xz \
+    && tar -xvf ./openvibe-3.3.1-src.tar.xz \
+    && rm ./openvibe-3.3.1-src.tar.xz 
+#RUN git clone https://gitlab.inria.fr/openvibe/meta.git openvibe-3.3.1-src \
+#    && cd openvibe-3.3.1-src \
+#    && git checkout 3.3.1 \
+#    && git submodule update --init --recursive
+
+RUN apt-get update \
+    && apt-get -y install sudo apt-utils software-properties-common \
+    && apt-get -y install libgtk2.0-dev libglade2-dev \
+    && apt-get -y install doxygen make gcc g++ libssl-dev libexpat1-dev libncurses5-dev ninja-build libzzip-dev libxerces-c-dev \
+    && apt-get -y install wget automake autoconf unzip gfortran libgsl-dev libreadline-dev libtool libxaw7-dev libpcre3-dev libfreeimage-dev libglu1-mesa-dev libalut-dev libvorbis-dev libois-dev libitpp-dev libsqlite0-dev libfftw3-dev python-dev python-numpy sqlite 
+
+RUN apt-get -y install cmake
+
+RUN cd openvibe-3.3.1-src \
+    && ./install_dependencies.sh
+
+##set(OV_EIGEN_FLAGS "-msse2")
+ADD ./arm64/openvibe-3.3.1-src/extras/CMakeLists.txt /headless/openvibe-3.3.1-src/extras/
+ADD ./arm64/openvibe-3.3.1-src/sdk/CMakeLists.txt /headless/openvibe-3.3.1-src/sdk/
+
+RUN cd openvibe-3.3.1-src \
+    && ./build.sh
+
+#RUN apt clean all
+
+#TODO submit patch to change sources
+#RUN wget https://github.com/neuroidss/FreeEEG32-alpha1.5/raw/master/OpenVIBE/openvibe-3.0.0-src_FreeEEG32-alpha1.5.tar.gz -O openvibe-3.0.0-src_FreeEEG32-alpha1.5.tar.gz \
+#    && tar -xzvf ./openvibe-3.0.0-src_FreeEEG32-alpha1.5.tar.gz \
+#    && cp -r ./openvibe-3.0.0-src_FreeEEG32-alpha1.5/extras/contrib/common/* openvibe-3.0.0-src/extras/contrib/common/ \
+#    && cp -r ./openvibe-3.0.0-src_FreeEEG32-alpha1.5/extras/contrib/plugins/server-drivers/* openvibe-3.0.0-src/extras/contrib/plugins/server-drivers/ \
+#    && cp -r ./openvibe-3.0.0-src_FreeEEG32-alpha1.5/extras/applications/platform/acquisition-server/share/* openvibe-3.0.0-src/extras/applications/platform/acquisition-server/share/ \
+#    && cp -r ./openvibe-3.0.0-src_FreeEEG32-alpha1.5/extras/applications/platform/acquisition-server/src/* openvibe-3.0.0-src/extras/applications/platform/acquisition-server/src/ \
+#    && rm ./openvibe-3.0.0-src_FreeEEG32-alpha1.5.tar.gz \
+#    && cd openvibe-3.0.0-src  \
+#    && ./build.sh
+
+
+## switch back to default user
+USER 1000
+
